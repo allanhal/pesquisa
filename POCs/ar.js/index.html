@@ -92,7 +92,7 @@
 
         // create atToolkitContext
         var arToolkitContext = new THREEx.ArToolkitContext({
-            cameraParametersUrl: THREEx.ArToolkitContext.baseURL + 'camera_para.dat',
+            cameraParametersUrl: 'https://raw.githubusercontent.com/allanhal/pesquisa/master/assets/camera_para.dat',
             detectionMode: 'mono',
             maxDetectionRate: 30,
             canvasWidth: 80 * 3,
@@ -120,7 +120,8 @@
         scene.add(markerRoot)
         var artoolkitMarker = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
             type: 'pattern',
-            patternUrl: THREEx.ArToolkitContext.baseURL + 'patt.hiro'
+            // patternUrl: THREEx.ArToolkitContext.baseURL + 'patt.hiro',
+            patternUrl: 'https://raw.githubusercontent.com/allanhal/pesquisa/master/assets/marker01.patt'
             // patternUrl : THREEx.ArToolkitContext.baseURL + 'patt.kanji'
         })
 
