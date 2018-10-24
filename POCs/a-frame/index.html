@@ -13,7 +13,6 @@
       
             el.addEventListener('mouseenter', function () {
                 el.setAttribute('color', data.color);
-                // el.setAttribute('animation', 'property: position; to: 90 00 00');
                 el.emit('animationEvent0')
             });
             
@@ -31,10 +30,6 @@
     <a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false;' vr-mode-ui="enabled: false">
         <a-marker type='pattern' url='https://raw.githubusercontent.com/allanhal/pesquisa/master/assets/marker01.patt'>
             <a-box position='0 0 0' color="#0000FF" custom-event="color: green" material='opacity: 0.5;'>
-                <!-- 
-                <a-animation id='boxAnimation' to="90 00 00" repeat="indefinite">
-                </a-animation> 
-                -->
                 <a-animation begin="animationEvent0" end="animationEvent1" to="90 00 00" repeat="indefinite"></a-animation>
             </a-box>
         </a-marker>
@@ -42,5 +37,4 @@
             <a-cursor></a-cursor>
         </a-entity>
     </a-scene>
-
 </body>
