@@ -15,10 +15,7 @@
 
 <body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
     <div style='position: absolute; top: 10px; width:100%; text-align: center; z-index: 1;'>
-        <a href="https://github.com/jeromeetienne/AR.js/" target="_blank">AR.js</a> - three.js mobile performance
-        <br />
-        Contact me any time at <a href='https://twitter.com/jerome_etienne' target='_blank'>@jerome_etienne</a>
-        <button id="element-id">APERTAR AQUI</button>
+        <button id="element-id">Interact</button>
     </div>
     <script>
         //////////////////////////////////////////////////////////////////////////////////
@@ -49,7 +46,9 @@
         //////////////////////////////////////////////////////////////////////////////////
 
         // Create a camera
-        var camera = new THREE.Camera();
+        // var camera = new THREE.Camera();
+        // var camera = new THREE.PerspectiveCamera( 45, window.innerWidth/ window.innerHeight, 1, 1000 );
+        var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10000);
         scene.add(camera);
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -117,6 +116,7 @@
         ////////////////////////////////////////////////////////////////////////////////
 
         var markerRoot = new THREE.Group
+        markerRoot.name = "markerRoot"
         scene.add(markerRoot)
         var artoolkitMarker = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
             type: 'pattern',
@@ -127,6 +127,7 @@
 
         // build a smoothedControls
         var smoothedRoot = new THREE.Group()
+        smoothedRoot.name = "smoothedRoot"
         scene.add(smoothedRoot)
         var smoothedControls = new THREEx.ArSmoothedControls(smoothedRoot, {
             lerpPosition: 0.4,
@@ -159,7 +160,7 @@
         // mesh.position.y	= 0.5
         // arWorldRoot.add( mesh );
 
-        let rotate = false;
+        rotate = false;
         onRenderFcts.push(function () {
             if (rotate) {
                 mesh.rotation.x += 0.1
@@ -193,17 +194,84 @@
         })
 
 
-        $('#element-id').on('click touchend', function (e) {
-            if (e.type == 'click') {
+        //////////////////////////////////////////////////////////////////////////////////
+        //  CUSTOM
+        //////////////////////////////////////////////////////////////////////////////////
 
-                // alert('Mouse Click');
-                // mesh.rotation.x += 1
-                // mesh.rotation.y += 0.5
-                rotate = !rotate
-            } else {
-                alert('Touch');
-            }
+        $('#element-id').on('click touchend', function (e) {
+            rotate = !rotate
         });
+
+
+        //////////////////////////////////////////////////////////////////////////////////
+        //  VECTOR
+        //////////////////////////////////////////////////////////////////////////////////
+
+        document.addEventListener('mousedown', onDocumentMouseDown, false);
+        document.addEventListener('touchstart', onDocumentTouchStart, false);
+
+        function onDocumentTouchStart(event) {
+            event.preventDefault();
+            event.clientX = event.touches[0].clientX;
+            event.clientY = event.touches[0].clientY;
+            onDocumentMouseDown(event);
+        }
+
+        function onDocumentMouseDown(event) {
+
+            event.preventDefault();
+
+            var vector = new THREE.Vector3(
+                (event.clientX / window.innerWidth) * 2 - 1,
+                -(event.clientY / window.innerHeight) * 2 + 1,
+                0.5
+            );
+            vector.unproject(camera);
+
+            var ray = new THREE.Raycaster(camera.position,
+                vector.sub(camera.position).normalize());
+
+            let toIntersect = scene.children.find(child => child.name == 'smoothedRoot').children
+
+            var intersects = ray.intersectObjects(toIntersect);
+
+            if (intersects && intersects.length > 0 && intersects[0].distance && intersects[0].distance > 0) {
+                console.log('Touched Box')
+                rotate = !rotate
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////
+        //  RAYCASTER
+        //////////////////////////////////////////////////////////////////////////////////
+
+
+        // var raycaster = new THREE.Raycaster();
+        // var mouse = new THREE.Vector2();
+
+        // document.addEventListener('mousedown', onDocumentMouseDown, false);
+        // document.addEventListener('touchstart', onDocumentTouchStart, false);
+
+        // function onDocumentTouchStart(event) {
+        //     event.preventDefault();
+        //     event.clientX = event.touches[0].clientX;
+        //     event.clientY = event.touches[0].clientY;
+        //     onDocumentMouseDown(event);
+        // }
+
+        // function onDocumentMouseDown(event) {
+        //     event.preventDefault();
+        //     mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+        //     mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+
+        //     raycaster.setFromCamera(mouse, camera);
+        //     // let intersect = raycaster.intersectObjects(scene.children);
+        //     let intersect = raycaster.intersectObjects(scene.children[2].children);
+
+        //     console.log('scene.children', scene.children)
+        //     console.log('scene.children[2].children', scene.children[2].children)
+        //     console.log('intersect', intersect)
+        // }
     </script>
 
 
