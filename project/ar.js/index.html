@@ -61,15 +61,15 @@
 
         var arToolkitSource = new THREEx.ArToolkitSource({
             // to read from the webcam 
-            sourceType: 'webcam',
+            // sourceType: 'webcam',
 
             // to read from an image
             // sourceType: 'image',
             // sourceUrl: './staticImage.jpg',
 
             // to read from a video
-            // sourceType : 'video',
-            // sourceUrl : './headtracking.mp4',		
+            sourceType : 'video',
+            sourceUrl : './headtracking.mp4',		
         })
 
         arToolkitSource.init(function onReady() {
@@ -124,7 +124,7 @@
         scene.add(markerRoot)
         var artoolkitMarker = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
             type: 'pattern',
-            patternUrl: 'https://raw.githubusercontent.com/allanhal/pesquisa/master/assets/marker01.patt'
+            patternUrl: 'https://raw.githubusercontent.com/allanhal/pesquisa/master/assets/kanji.patt'
         })
 
         // build a smoothedControls
