@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<!-- three.js library -->
+<script src='three.min.js'></script>
+<script src="stats.min.js"></script>
+<!-- <script src='vendor/three.js/build/three.min.js'></script> -->
+<!-- <script src="vendor/three.js/examples/js/libs/stats.min.js"></script> -->
+<!-- ar.js -->
+<script src="ar.js"></script>
+<!-- <script src="../build/ar.js"></script> -->
+<script>
+    THREEx.ArToolkitContext.baseURL = '../'
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
+    <div style='position: absolute; top: 10px; width:100%; text-align: center; z-index: 1;'>
+        <button id="element-id">Interact</button>
+        <button id="left-button">left</button>
+        <button id="right-button">right</button>
+        <button id="up-button">up</button>
+        <button id="down-button">down</button>
+    </div>
+    <script>
+        //////////////////////////////////////////////////////////////////////////////////
+        //		Init
+        //////////////////////////////////////////////////////////////////////////////////
+
+        // init renderer
+        var renderer = new THREE.WebGLRenderer({
+            // antialias	: true,
+            alpha: true
+        });
+        renderer.setClearColor(new THREE.Color('lightgrey'), 0)
+        // renderer.setPixelRatio( 1/2 );
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.domElement.style.position = 'absolute'
+        renderer.domElement.style.top = '0px'
+        renderer.domElement.style.left = '0px'
+        document.body.appendChild(renderer.domElement);
+
+        // array of functions for the rendering loop
+        var onRenderFcts = [];
+
+        // init scene and camera
+        var scene = new THREE.Scene();
+
+        //////////////////////////////////////////////////////////////////////////////////
+        //		Initialize a basic camera
+        //////////////////////////////////////////////////////////////////////////////////
+
+        // Create a camera
+        // var camera = new THREE.Camera();
+        // var camera = new THREE.PerspectiveCamera( 45, window.innerWidth/ window.innerHeight, 1, 1000 );
+        var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10000);
+        scene.add(camera);
+
+        ////////////////////////////////////////////////////////////////////////////////
+        //          handle arToolkitSource
+        ////////////////////////////////////////////////////////////////////////////////
+
+        var arToolkitSource = new THREEx.ArToolkitSource({
+            // to read from the webcam 
+            // sourceType: 'webcam',
+
+            // to read from an image
+            sourceType: 'image',
+            sourceUrl: 'https://github.com/jeromeetienne/AR.js/raw/master/data/images/img.jpg',
+            // sourceUrl : THREEx.ArToolkitContext.baseURL + '../data/images/img.jpg',		
+
+
+            // to read from a video
+            // sourceType : 'video',
+            // sourceUrl : THREEx.ArToolkitContext.baseURL + '../data/videos/headtracking.mp4',		
+        })
+
+        arToolkitSource.init(function onReady() {
+            onResize()
+        })
+
+        // handle resize
+        window.addEventListener('resize', function () {
+            onResize()
+        })
+
+        function onResize() {
+            arToolkitSource.onResizeElement()
+            arToolkitSource.copyElementSizeTo(renderer.domElement)
+            if (arToolkitContext.arController !== null) {
+                arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas)
+            }
+        }
+        ////////////////////////////////////////////////////////////////////////////////
+        //          initialize arToolkitContext
+        ////////////////////////////////////////////////////////////////////////////////
+
+
+        // create atToolkitContext
+        var arToolkitContext = new THREEx.ArToolkitContext({
+            cameraParametersUrl: 'https://raw.githubusercontent.com/allanhal/pesquisa/master/assets/camera_para.dat',
+            detectionMode: 'mono',
+            maxDetectionRate: 30,
+            canvasWidth: 80 * 3,
+            canvasHeight: 60 * 3,
+        })
+        // initialize it
+        arToolkitContext.init(function onCompleted() {
+            // copy projection matrix to camera
+            camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
+        })
+
+        // update artoolkit on every frame
+        onRenderFcts.push(function () {
+            if (arToolkitSource.ready === false) return
+
+            arToolkitContext.update(arToolkitSource.domElement)
+        })
+
+
+        ////////////////////////////////////////////////////////////////////////////////
+        //          Create a ArMarkerControls
+        ////////////////////////////////////////////////////////////////////////////////
+
+        var markerRoot = new THREE.Group
+        markerRoot.name = "markerRoot"
+        scene.add(markerRoot)
+        var artoolkitMarker = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
+            type: 'pattern',
+            // patternUrl: THREEx.ArToolkitContext.baseURL + 'patt.hiro',
+            patternUrl: 'https://raw.githubusercontent.com/allanhal/pesquisa/master/assets/hiro.patt'
+            // patternUrl : THREEx.ArToolkitContext.baseURL + 'patt.kanji'
+        })
+
+        // build a smoothedControls
+        var smoothedRoot = new THREE.Group()
+        smoothedRoot.name = "smoothedRoot"
+        scene.add(smoothedRoot)
+        var smoothedControls = new THREEx.ArSmoothedControls(smoothedRoot, {
+            lerpPosition: 0.4,
+            lerpQuaternion: 0.3,
+            lerpScale: 1,
+        })
+        onRenderFcts.push(function (delta) {
+            smoothedControls.update(markerRoot)
+        })
+        //////////////////////////////////////////////////////////////////////////////////
+        //		add an object in the scene
+        //////////////////////////////////////////////////////////////////////////////////
+
+        var arWorldRoot = smoothedRoot
+
+        var geometry = new THREE.CubeGeometry(1, 1, 1);
+        var material1 = new THREE.MeshBasicMaterial({
+            color: new THREE.Color(0x5362d2),
+            transparent: true,
+            opacity: 0.85,
+            side: THREE.DoubleSide
+        });
+        var material2 = new THREE.MeshBasicMaterial({
+            color: new THREE.Color(0xd2ca53),
+            transparent: true,
+            opacity: 0.85,
+            side: THREE.DoubleSide
+        });
+        var mesh1 = new THREE.Mesh(geometry, material1);
+        mesh1.position.x = -(geometry.parameters.width / 2)
+        mesh1.position.y = geometry.parameters.height / 2
+        mesh1.name = "mesh1"
+        arWorldRoot.add(mesh1);
+
+        var mesh2 = new THREE.Mesh(geometry, material2);
+        mesh2.position.x = (geometry.parameters.width / 2)
+        mesh2.position.y = geometry.parameters.height / 2
+        mesh2.name = "mesh2"
+        arWorldRoot.add(mesh2);
+
+        clicked1 = false;
+        clicked2 = false;
+        onRenderFcts.push(function () {
+            if (clicked1) {
+                // mesh1.rotation.x += 0.1
+                mesh1.position.x += 0.1
+            }
+            if (clicked2) {
+                mesh2.position.x -= 0.1
+                // mesh2.rotation.x += 0.1
+            }
+        })
+
+        //////////////////////////////////////////////////////////////////////////////////
+        //		render the whole thing on the page
+        //////////////////////////////////////////////////////////////////////////////////
+        var stats = new Stats();
+        document.body.appendChild(stats.dom);
+        // render the scene
+        onRenderFcts.push(function () {
+            renderer.render(scene, camera);
+            stats.update();
+        })
+
+        // run the rendering loop
+        var lastTimeMsec = null
+        requestAnimationFrame(function animate(nowMsec) {
+            // keep looping
+            requestAnimationFrame(animate);
+            // measure time
+            lastTimeMsec = lastTimeMsec || nowMsec - 1000 / 60
+            var deltaMsec = Math.min(200, nowMsec - lastTimeMsec)
+            lastTimeMsec = nowMsec
+            // call each update function
+            onRenderFcts.forEach(function (onRenderFct) {
+                onRenderFct(deltaMsec / 1000, nowMsec / 1000)
+            })
+        })
+
+        //////////////////////////////////////////////////////////////////////////////////
+        //  CUSTOM
+        //////////////////////////////////////////////////////////////////////////////////
+
+        $('#element-id').on('click touchend', function (e) {
+            clicked1 = !clicked1
+        });
+        $('#left-button').on('click touchend', function (e) {
+            mesh1.position.x += 1
+        });
+        $('#right-button').on('click touchend', function (e) {
+            mesh1.position.x -= 1
+        });
+        $('#up-button').on('click touchend', function (e) {
+            mesh1.position.y += 1
+        });
+        $('#down-button').on('click touchend', function (e) {
+            mesh1.position.y -= 1
+        });
+
+        //////////////////////////////////////////////////////////////////////////////////
+        //  VECTOR
+        //////////////////////////////////////////////////////////////////////////////////
+
+        document.addEventListener('mousedown', onDocumentMouseDown, false);
+        document.addEventListener('touchstart', onDocumentTouchStart, false);
+
+        function onDocumentTouchStart(event) {
+            event.preventDefault();
+            event.clientX = event.touches[0].clientX;
+            event.clientY = event.touches[0].clientY;
+            onDocumentMouseDown(event);
+        }
+
+        function onDocumentMouseDown(event) {
+
+            event.preventDefault();
+
+            var vector = new THREE.Vector3(
+                (event.clientX / window.innerWidth) * 2 - 1,
+                -(event.clientY / window.innerHeight) * 2 + 1,
+                0.5
+            );
+            vector.unproject(camera);
+
+            var ray = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+
+
+            let toIntersect = scene.children.find(child => child.name == 'smoothedRoot').children
+
+            var intersects = ray.intersectObjects(toIntersect);
+            var isIntersected = intersects && intersects.length > 0
+            if (isIntersected) {
+                if (intersects[0].object.name == "mesh1") {
+                    clicked1 = !clicked1
+                }
+                if (intersects[0].object.name == "mesh2") {
+                    clicked2 = !clicked2
+                }
+            }
+        }
+    </script>
+
+
+</body>
