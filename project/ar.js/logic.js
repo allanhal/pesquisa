@@ -1,3 +1,7 @@
+const UNIT = 0.3
+
+const SPACER = 1.25
+
 //////////////////////////////////////////////////////////////////////////////////
 //		add an object in the scene
 //////////////////////////////////////////////////////////////////////////////////
@@ -59,32 +63,79 @@ function enableRotateBox2() {
 }
 
 function goLeft() {
+    let currentMesh
+    for (let index = globalMesh.length - 1; index >= 0; index--) {
+        currentMesh = globalMesh[index]
+        if (index == 0) {
+            currentMesh.position.x -= UNIT;
+        } else {
+            currentMesh.position.x = globalMesh[index - 1].position.x
+            currentMesh.position.y = globalMesh[index - 1].position.y
+            currentMesh.position.z = globalMesh[index - 1].position.z
+        }
+    }
     mesh1.position.x -= UNIT;
 }
 
 function goRight() {
+    let currentMesh
+    for (let index = globalMesh.length - 1; index >= 0; index--) {
+        currentMesh = globalMesh[index]
+        if (index == 0) {
+            currentMesh.position.x += UNIT;
+        } else {
+            currentMesh.position.x = globalMesh[index - 1].position.x
+            currentMesh.position.y = globalMesh[index - 1].position.y
+            currentMesh.position.z = globalMesh[index - 1].position.z
+        }
+    }
+
     mesh1.position.x += UNIT
 }
 
 function goUp() {
+    for (let index = globalMesh.length - 1; index >= 0; index--) {
+        currentMesh = globalMesh[index]
+        if (index == 0) {
+            currentMesh.position.z -= UNIT
+        } else {
+            currentMesh.position.x = globalMesh[index - 1].position.x
+            currentMesh.position.y = globalMesh[index - 1].position.y
+            currentMesh.position.z = globalMesh[index - 1].position.z
+        }
+    }
+
     mesh1.position.z -= UNIT
 }
 
 function goDown() {
+    for (let index = globalMesh.length - 1; index >= 0; index--) {
+        currentMesh = globalMesh[index]
+        if (index == 0) {
+            currentMesh.position.z += UNIT
+        } else {
+            currentMesh.position.x = globalMesh[index - 1].position.x
+            currentMesh.position.y = globalMesh[index - 1].position.y
+            currentMesh.position.z = globalMesh[index - 1].position.z
+        }
+    }
     mesh1.position.z += UNIT
 }
 
-console.log('arWorldRoot.children', arWorldRoot.children)
-
-
-colorArray = [0x5362d2, 0xd2ca53, 0x5362d2]
-for (let index = 0; index < 3; index++) {
-    mesh = new THREE.Mesh(geometry, material3);
-    mesh.position.x = UNIT * 1.25 * index
-    mesh.position.z = 1
-    mesh.name = "mesh" + index
-
-    arWorldRoot.add(mesh);
-
-    console.log('UNIT * element', UNIT * index)
+function getLastMesh() {
+    return globalMesh.slice(-1)[0]
 }
+
+globalMesh = [];
+(function addingObjectOnScene() {
+    for (let index = 0; index < 4; index++) {
+        let mesh = new THREE.Mesh(geometry, material3);
+        mesh.position.x = UNIT * SPACER * index
+        mesh.position.x = UNIT * index
+        mesh.position.z = 1
+        mesh.name = "mesh" + index
+
+        arWorldRoot.add(mesh);
+        globalMesh.push(mesh)
+    }
+})()

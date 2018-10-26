@@ -1,3 +1,7 @@
+
+// http://arjs.epizy.com/
+// https://sqqoemff.epizy.com
+
 //////////////////////////////////////////////////////////////////////////////////
 //		Init
 //////////////////////////////////////////////////////////////////////////////////
@@ -21,8 +25,6 @@ var onRenderFcts = [];
 // init scene and camera
 var scene = new THREE.Scene();
 
-const UNIT = 0.3
-
 //////////////////////////////////////////////////////////////////////////////////
 //		Initialize a basic camera
 //////////////////////////////////////////////////////////////////////////////////
@@ -42,12 +44,12 @@ var arToolkitSource = new THREEx.ArToolkitSource({
     // sourceType: 'webcam',
 
     // to read from an image
-    // sourceType: 'image',
-    // sourceUrl: './img.png',
+    sourceType: 'image',
+    sourceUrl: './img.png',
 
     // to read from a video
-    sourceType: 'video',
-    sourceUrl: './headtracking.mp4',
+    // sourceType: 'video',
+    // sourceUrl: './headtracking.mp4',
 })
 
 arToolkitSource.init(function onReady() {
