@@ -1,40 +1,101 @@
+const DEBUG = false;
+
+document.getElementById('main-div').style.visibility = DEBUG ? "" : "hidden";
+
+//////////////////////////////////////////////////////////////////////////////////
+//  Touch Events
+//////////////////////////////////////////////////////////////////////////////////
+
+var touchstartX = 0;
+var touchstartY = 0;
+var touchendX = 0;
+var touchendY = 0;
+
+eventStart = 'touchstart'
+eventEnd = 'touchend'
+
+eventStart = 'mousedown'
+eventEnd = 'mouseup'
+
+document.body.addEventListener(eventStart, function (event) {
+    touchstartX = event.screenX;
+    touchstartY = event.screenY;
+}, false);
+
+document.body.addEventListener(eventEnd, function (event) {
+    touchendX = event.screenX;
+    touchendY = event.screenY;
+    handleGesure();
+}, false);
+
+function handleGesure() {
+    let xDirection = touchendX < touchstartX
+    let xDiff = touchendX - touchstartX < 0 ? touchstartX - touchendX : touchendX - touchstartX
+    if (xDirection) {
+        document.getElementById('eventoX').innerHTML = 'X: left'
+    } else {
+        document.getElementById('eventoX').innerHTML = 'X: right'
+    }
+
+    let yDirection = touchendY < touchstartY
+    let yDiff = touchendY - touchstartY < 0 ? touchstartY - touchendY : touchendY - touchstartY
+    if (yDirection) {
+        document.getElementById('eventoY').innerHTML = 'Y: up'
+    } else {
+        document.getElementById('eventoY').innerHTML = 'Y: down'
+    }
+
+    if (xDiff > yDiff) {
+        if (xDirection) {
+            document.getElementById('eventoTotal').innerHTML = 'Result: left'
+        } else {
+            document.getElementById('eventoTotal').innerHTML = 'Result: right'
+        }
+    } else {
+        if (yDirection) {
+            document.getElementById('eventoTotal').innerHTML = 'Result: up'
+        } else {
+            document.getElementById('eventoTotal').innerHTML = 'Result: down'
+        }
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 //  Button Events
 //////////////////////////////////////////////////////////////////////////////////
 
 $('#clicked-1').on('click touchend', function (e) {
-    clicked1 = !clicked1
+    enableRotateBox1()
 });
 $('#clicked-2').on('click touchend', function (e) {
-    clicked2 = !clicked2
+    enableRotateBox2()
 });
 $('#left-button').on('click touchend', function (e) {
-    goLeft();
+    setLeft();
 });
 $('#right-button').on('click touchend', function (e) {
-
-    goRight();
+    setRight();
 });
 $('#up-button').on('click touchend', function (e) {
-    goUp()
+    setUp()
 });
 $('#down-button').on('click touchend', function (e) {
-    goDown()
+    setDown()
 });
 
 $(document).keydown(function (e) {
     switch (e.which) {
         case 37: // left
-            goLeft()
+            setLeft()
             break;
         case 38: // up
-            goUp()
+            setUp()
             break;
         case 39: // right
-            goRight()
+            setRight()
             break;
         case 40: // down
-            goDown()
+            setDown()
             break;
         default:
             return; // exit this handler for other keys
@@ -81,5 +142,24 @@ function onDocumentMouseDown(event) {
         if (intersects[0].object.name == "mesh2") {
             enableRotateBox2()
         }
+        if (intersects[0].object.name == "meshUp") {
+            setUp()
+        }
+        if (intersects[0].object.name == "meshDown") {
+            setDown()
+        }
+        if (intersects[0].object.name == "meshRight") {
+            setRight()
+        }
+        if (intersects[0].object.name == "meshLeft") {
+            setLeft()
+        }
     }
 }
+
+//////////////////////////////////////////////////////////////////////////////////
+//  Default Events
+//////////////////////////////////////////////////////////////////////////////////
+// document.ontouchmove = function (event) {
+//     event.preventDefault();
+// }

@@ -1,6 +1,9 @@
+THREEx.ArToolkitContext.baseURL = '../'
 
-// http://arjs.epizy.com/
-// https://sqqoemff.epizy.com
+function log(text) {
+    let current = document.getElementById('log').innerHTML
+    document.getElementById('log').innerHTML = `${current} ${text} <br>`
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 //		Init
@@ -13,6 +16,9 @@ var renderer = new THREE.WebGLRenderer({
 });
 renderer.setClearColor(new THREE.Color('lightgrey'), 0)
 // renderer.setPixelRatio( 1/2 );
+log(`window.innerWidth ${window.innerWidth}`)
+log(`window.innerHeight ${window.innerHeight}`)
+
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.domElement.style.position = 'absolute'
 renderer.domElement.style.top = '0px'
@@ -31,8 +37,8 @@ var scene = new THREE.Scene();
 
 // Create a camera
 // var camera = new THREE.Camera();
-// var camera = new THREE.PerspectiveCamera( 45, window.innerWidth/ window.innerHeight, 1, 1000 );
-var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10000);
+var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+// var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10000);
 scene.add(camera);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -41,11 +47,13 @@ scene.add(camera);
 
 var arToolkitSource = new THREEx.ArToolkitSource({
     // to read from the webcam 
-    // sourceType: 'webcam',
+    sourceType: 'webcam',
 
     // to read from an image
-    sourceType: 'image',
-    sourceUrl: './img.png',
+    // sourceType: 'image',
+    // sourceUrl: './img.png',
+    // sourceUrl: './img2.png',
+    // sourceUrl: './bg.jpg',
 
     // to read from a video
     // sourceType: 'video',
@@ -62,16 +70,18 @@ window.addEventListener('resize', function () {
 })
 
 function onResize() {
+
     arToolkitSource.onResizeElement()
     arToolkitSource.copyElementSizeTo(renderer.domElement)
     if (arToolkitContext.arController !== null) {
         arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas)
     }
+
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 //          initialize arToolkitContext
 ////////////////////////////////////////////////////////////////////////////////
-
 
 // create atToolkitContext
 var arToolkitContext = new THREEx.ArToolkitContext({
@@ -80,6 +90,8 @@ var arToolkitContext = new THREEx.ArToolkitContext({
     maxDetectionRate: 30,
     canvasWidth: 80 * 3,
     canvasHeight: 60 * 3,
+    // canvasWidth: window.innerWidth,
+    // canvasHeight: window.innerHeight,
 })
 // initialize it
 arToolkitContext.init(function onCompleted() {

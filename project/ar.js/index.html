@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 <!-- three.js library -->
+<link rel="stylesheet" href="styles.css">
+<script src="jquery-3.3.1.min.js"></script>
 <script src='three.min.js'></script>
 <script src="stats.min.js"></script>
-<!-- <script src='vendor/three.js/build/three.min.js'></script> -->
-<!-- <script src="vendor/three.js/examples/js/libs/stats.min.js"></script> -->
-<!-- ar.js -->
 <script src="ar.js"></script>
-<!-- <script src="../build/ar.js"></script> -->
-<script>
-    THREEx.ArToolkitContext.baseURL = '../'
-</script>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="bodyScrollLock.min.js"></script>
 
-<body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
-    <div style='position: absolute; top: 10px; width:100%; text-align: center; z-index: 1;'>
+
+<body class="main-body">
+    <div id="main-div" class="main-div">
+        <span id="eventoX">eventoX</span>
+        <br>
+        <span id="eventoY">eventoY</span>
+        <br>
+        <span id="eventoTotal">eventoTotal</span>
+        <br>
+        <span id="log"></span>
+        <br>
         <button id="clicked-1">Clicked1</button>
         <button id="clicked-2">Clicked2</button>
         <button id="left-button">left</button>
@@ -22,8 +26,17 @@
         <button id="up-button">up</button>
         <button id="down-button">down</button>
     </div>
+
     <script src="main.js"></script>
     <script src="events.js"></script>
     <script src="logic.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('html, body').css({
+                overflow: 'hidden',
+                height: '100%'
+            });
+        });
+    </script>
 
 </body>
