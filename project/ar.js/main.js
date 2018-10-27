@@ -1,9 +1,6 @@
 THREEx.ArToolkitContext.baseURL = '../'
 
-function log(text) {
-    let current = document.getElementById('log').innerHTML
-    document.getElementById('log').innerHTML = `${current} ${text} <br>`
-}
+var enableStats = false
 
 //////////////////////////////////////////////////////////////////////////////////
 //		Init
@@ -16,8 +13,6 @@ var renderer = new THREE.WebGLRenderer({
 });
 renderer.setClearColor(new THREE.Color('lightgrey'), 0)
 // renderer.setPixelRatio( 1/2 );
-log(`window.innerWidth ${window.innerWidth}`)
-log(`window.innerHeight ${window.innerHeight}`)
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.domElement.style.position = 'absolute'
@@ -37,8 +32,9 @@ var scene = new THREE.Scene();
 
 // Create a camera
 // var camera = new THREE.Camera();
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+// var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
 // var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10000);
+var camera = new THREE.PerspectiveCamera(140, window.innerWidth / window.innerHeight, 1, 10000);
 scene.add(camera);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -136,7 +132,9 @@ onRenderFcts.push(function (delta) {
 //		render the whole thing on the page
 //////////////////////////////////////////////////////////////////////////////////
 var stats = new Stats();
-document.body.appendChild(stats.dom);
+if (enableStats) {
+    document.body.appendChild(stats.dom);
+}
 // render the scene
 onRenderFcts.push(function () {
     renderer.render(scene, camera);

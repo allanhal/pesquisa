@@ -1,42 +1,27 @@
 <!DOCTYPE html>
-<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<!-- <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"> -->
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, minimal-ui" />
+<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> -->
+
+<!-- <meta name="apple-mobile-web-app-capable" content="yes" /> -->
+
 <!-- three.js library -->
 <link rel="stylesheet" href="styles.css">
 <script src="jquery-3.3.1.min.js"></script>
 <script src='three.min.js'></script>
 <script src="stats.min.js"></script>
 <script src="ar.js"></script>
-<script src="bodyScrollLock.min.js"></script>
-
 
 <body class="main-body">
-    <div id="main-div" class="main-div">
-        <span id="eventoX">eventoX</span>
-        <br>
-        <span id="eventoY">eventoY</span>
-        <br>
-        <span id="eventoTotal">eventoTotal</span>
-        <br>
-        <span id="log"></span>
-        <br>
-        <button id="clicked-1">Clicked1</button>
-        <button id="clicked-2">Clicked2</button>
-        <button id="left-button">left</button>
-        <button id="right-button">right</button>
-        <button id="up-button">up</button>
-        <button id="down-button">down</button>
+    <div class="complete-div">
+        <div class="header-div">
+            <span style="text-align: left">Snake Swipe</span>
+            <br>
+            <span id="score" style="text-align: right">Score: 0</span>
+            <span id="console"></span>
+        </div>
+        <script src="main.js"></script>
+        <script src="events.js"></script>
+        <script src="logic.js"></script>
     </div>
-
-    <script src="main.js"></script>
-    <script src="events.js"></script>
-    <script src="logic.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('html, body').css({
-                overflow: 'hidden',
-                height: '100%'
-            });
-        });
-    </script>
-
 </body>

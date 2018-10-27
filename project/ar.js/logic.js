@@ -1,10 +1,22 @@
 const UNIT = 0.3
-const SPACER = 1.25
-const SCALE = .7
+const SPACER = 2
+const SCALE = .9
+const SNAKE_INIT_SIZE = 6
+const RANGE_LIMIT = 2
 
-currentWay = undefined
-lastTime = 0
-delay = 500
+var currentWay = undefined
+var currentSnakeSize = 0
+var lastTime = 0
+var delay = 300
+var snakeMesh = [];
+var meshObstacle
+
+var enabledControls = true;
+var meshUp
+var meshDown
+var meshLeft
+var meshRight
+var score = 0
 
 //////////////////////////////////////////////////////////////////////////////////
 //		add an object in the scene
@@ -37,113 +49,215 @@ var materialPurple = new THREE.MeshBasicMaterial({
     opacity: 0.85,
     side: THREE.DoubleSide
 });
+var materialRgb = new THREE.MeshNormalMaterial({
+    transparent: true,
+    opacity: 0.85,
+    side: THREE.DoubleSide
+});
 
-let loader = new THREE.TextureLoader();
-let materialArray = [
-    // new THREE.MeshBasicMaterial({
-    //     map: loader.load("images/xpos.png")
-    // }),
-    materialBlue,
-    materialBlue,
-    materialBlue,
-    materialBlue,
-    materialBlue,
-    materialBlue,
-];
-
-
-let materialArrayUp = [].concat(materialArray)
-materialArrayUp[2] = new THREE.MeshBasicMaterial({
-    map: loader.load("images/yposUp.png")
-})
-
-// var meshUp = new THREE.Mesh(geometry, materialBlue);
-var meshUp = new THREE.Mesh(geometry, materialArrayUp);
-meshUp.position.x = -5 * UNIT
-meshUp.position.z = -2 * UNIT
-meshUp.name = "meshUp"
-meshUp.scale.x = 3 * SCALE;
-meshUp.scale.y = 3 * SCALE;
-meshUp.scale.z = 3 * SCALE;
-arWorldRoot.add(meshUp);
-
-materialArrayDown = [].concat(materialArray)
-materialArrayDown[2] = new THREE.MeshBasicMaterial({
-    map: loader.load("images/yposDown.png")
-})
-
-// var meshDown = new THREE.Mesh(geometry, materialYellow);
-var meshDown = new THREE.Mesh(geometry, materialArrayDown);
-meshDown.position.x = -5 * UNIT
-meshDown.position.z = 2 * UNIT
-meshDown.name = "meshDown"
-meshDown.scale.x = 3 * SCALE;
-meshDown.scale.y = 3 * SCALE;
-meshDown.scale.z = 3 * SCALE;
-arWorldRoot.add(meshDown);
-
-materialArrayRight = [].concat(materialArray)
-materialArrayRight[2] = new THREE.MeshBasicMaterial({
-    map: loader.load("images/yposRight.png")
-})
-
-// var meshRight = new THREE.Mesh(geometry, materialGreen);
-var meshRight = new THREE.Mesh(geometry, materialArrayRight);
-meshRight.position.x = 8 * UNIT
-meshRight.position.z = 0 * UNIT
-meshRight.name = "meshRight"
-meshRight.scale.x = 3 * SCALE;
-meshRight.scale.y = 3 * SCALE;
-meshRight.scale.z = 3 * SCALE;
-arWorldRoot.add(meshRight);
+(function createControls() {
+    let loader = new THREE.TextureLoader();
+    let materialArray = [
+        // new THREE.MeshBasicMaterial({
+        //     map: loader.load("images/xpos.png")
+        // }),
+        materialBlue,
+        materialBlue,
+        materialBlue,
+        materialBlue,
+        materialBlue,
+        materialBlue,
+    ];
 
 
-materialArrayLeft = [].concat(materialArray)
-materialArrayLeft[2] = new THREE.MeshBasicMaterial({
-    map: loader.load("images/yposLeft.png")
-})
-var meshLeft = new THREE.Mesh(geometry, materialArrayLeft);
-meshLeft.position.x = 4 * UNIT
-meshLeft.position.z = 0 * UNIT
-meshLeft.name = "meshLeft"
-meshLeft.scale.x = 3 * SCALE;
-meshLeft.scale.y = 3 * SCALE;
-meshLeft.scale.z = 3 * SCALE;
-arWorldRoot.add(meshLeft);
+    let materialArrayUp = [].concat(materialArray)
+    // materialArrayUp[2] = new THREE.MeshBasicMaterial({
+    //     map: loader.load("images/yposUp.png")
+    // })
 
+    // var meshUp = new THREE.Mesh(geometry, materialBlue);
+    meshUp = new THREE.Mesh(geometry, materialArrayUp);
+    meshUp.position.x = -5 * UNIT
+    meshUp.position.y = UNIT * 1;
+    meshUp.position.z = -2 * UNIT
+    meshUp.name = "meshUp"
+    meshUp.scale.x = 3 * SCALE;
+    meshUp.scale.y = 3 * SCALE;
+    meshUp.scale.z = 3 * SCALE;
+
+
+    var materialArrayDown = [].concat(materialArray)
+    // materialArrayDown[2] = new THREE.MeshBasicMaterial({
+    //     map: loader.load("images/yposDown.png")
+    // })
+
+    // var meshDown = new THREE.Mesh(geometry, materialYellow);
+    meshDown = new THREE.Mesh(geometry, materialArrayDown);
+    meshDown.position.x = -5 * UNIT
+    meshDown.position.y = UNIT * 1;
+    meshDown.position.z = 2 * UNIT
+    meshDown.name = "meshDown"
+    meshDown.scale.x = 3 * SCALE;
+    meshDown.scale.y = 3 * SCALE;
+    meshDown.scale.z = 3 * SCALE;
+
+
+    var materialArrayRight = [].concat(materialArray)
+    // materialArrayRight[2] = new THREE.MeshBasicMaterial({
+    //     map: loader.load("images/yposRight.png")
+    // })
+
+    // var meshRight = new THREE.Mesh(geometry, materialGreen);
+    meshRight = new THREE.Mesh(geometry, materialArrayRight);
+    meshRight.position.x = 8 * UNIT
+    meshRight.position.y = UNIT * 1;
+    meshRight.position.z = 0 * UNIT
+    meshRight.name = "meshRight"
+    meshRight.scale.x = 3 * SCALE;
+    meshRight.scale.y = 3 * SCALE;
+    meshRight.scale.z = 3 * SCALE;
+
+
+    var materialArrayLeft = [].concat(materialArray)
+    // materialArrayLeft[2] = new THREE.MeshBasicMaterial({
+    //     map: loader.load("images/yposLeft.png")
+    // })
+    meshLeft = new THREE.Mesh(geometry, materialArrayLeft);
+    meshLeft.position.x = 4 * UNIT
+    meshLeft.position.y = UNIT * 1;
+    meshLeft.position.z = 0 * UNIT
+    meshLeft.name = "meshLeft"
+    meshLeft.scale.x = 3 * SCALE;
+    meshLeft.scale.y = 3 * SCALE;
+    meshLeft.scale.z = 3 * SCALE;
+
+    let queryParams = new URLSearchParams(window.location.search);
+    if (queryParams.has('controls')) {
+        toggleControls()
+    }
+})()
+
+function toggleControls() {
+    if (enabledControls) {
+        arWorldRoot.add(meshUp);
+        arWorldRoot.add(meshDown);
+        arWorldRoot.add(meshRight);
+        arWorldRoot.add(meshLeft);
+        enabledControls = !enabledControls
+    } else {
+        arWorldRoot.remove(meshUp);
+        arWorldRoot.remove(meshDown);
+        arWorldRoot.remove(meshRight);
+        arWorldRoot.remove(meshLeft);
+        enabledControls = !enabledControls
+    }
+}
+
+
+function createObstacleOnScene() {
+    meshObstacle = new THREE.Mesh(geometry, materialRgb);
+    meshObstacle.position.x = UNIT * getRandomValueInsideRange()
+    meshObstacle.position.y = UNIT * 1;
+    meshObstacle.position.z = UNIT * getRandomValueInsideRange()
+    meshObstacle.scale.x = 1 * SCALE;
+    meshObstacle.scale.y = 1 * SCALE;
+    meshObstacle.scale.z = 1 * SCALE;
+    meshObstacle.name = "meshObstacle"
+
+    arWorldRoot.add(meshObstacle);
+}
+createObstacleOnScene()
 
 // main loop
 onRenderFcts.push(function () {
-    if (clicked1) {
-        mesh1.rotation.x += 0.1
-    }
-    if (clicked2) {
-        mesh2.rotation.x += 0.1
+    keepObstacleRotation()
+
+    let now = new Date().getTime()
+    if (now - lastTime >= delay) {
+        lastTime = now
+
+        setDirectionOfSnake()
+        verifyObstacleColision()
     }
 
+})
+
+function keepObstacleRotation() {
+    meshObstacle.rotation.x += 0.1
+    meshObstacle.rotation.y += 0.001
+}
+
+function setDirectionOfSnake() {
     if (currentWay) {
-        let now = new Date().getTime()
-        if (now - lastTime >= delay) {
-            lastTime = now
-            switch (currentWay) {
-                case 'r':
-                    goRight()
-                    break;
-                case 'l':
-                    goLeft()
-                    break;
-                case 'u':
-                    goUp()
-                    break;
-                case 'd':
-                    goDown()
-                    break;
-                default:
-                    break;
-            }
+        switch (currentWay) {
+            case 'r':
+                goRight()
+                break;
+            case 'l':
+                goLeft()
+                break;
+            case 'u':
+                goUp()
+                break;
+            case 'd':
+                goDown()
+                break;
+            default:
+                break;
         }
     }
-})
+}
+
+function verifyObstacleColision() {
+    let snakeHead = snakeMesh[0]
+    let snakeX = to2Decimal(snakeHead.position.x)
+    let snakeZ = to2Decimal(snakeHead.position.z)
+
+    let obstacleX = to2Decimal(meshObstacle.position.x)
+    let obstacleZ = to2Decimal(meshObstacle.position.z)
+
+    let sameX = snakeX == obstacleX
+    let sameZ = snakeZ == obstacleZ
+
+    // console.log('snakeX', snakeX)
+    // console.log('snakeZ', snakeZ)
+
+    // console.log('obstacleX', obstacleX)
+    // console.log('obstacleZ', obstacleZ)
+
+    // console.log('sameX', sameX)
+    // console.log('sameZ', sameZ)
+
+    let consolable = `
+    <br>
+    snakeX ${snakeX} 
+    <br>
+    snakeZ ${snakeZ} 
+    <br>
+    obstacleX ${obstacleX} 
+    <br>
+    obstacleZ ${obstacleZ} 
+    <br>
+    sameX ${sameX} 
+    <br>
+    sameZ ${sameZ} 
+    <br>
+    `
+
+    // document.getElementById('console').innerHTML = consolable
+
+    let isSnakeHeadeCollidedObstacle = sameX && sameZ
+    if (isSnakeHeadeCollidedObstacle) {
+        let newObstacleX = UNIT * getRandomInt(-3, 3)
+        let newObstacleZ = UNIT * getRandomInt(-3, 3)
+        meshObstacle.position.x = newObstacleX
+        meshObstacle.position.z = newObstacleZ
+
+        createExtraPiece()
+        document.getElementById('score').innerHTML = `Score: ${++score}`
+    }
+
+}
 
 clicked1 = false;
 clicked2 = false;
@@ -178,50 +292,52 @@ function setDown() {
 
 function goLeft() {
     let currentMesh
-    for (let index = globalMesh.length - 1; index >= 0; index--) {
-        currentMesh = globalMesh[index]
+    for (let index = snakeMesh.length - 1; index >= 0; index--) {
+        currentMesh = snakeMesh[index]
         if (index == 0) {
-            currentMesh.position.x -= UNIT;
+            currentMesh.position.x = to2Decimal(currentMesh.position.x - UNIT);
         } else {
-            copyPosition(currentMesh, globalMesh[index - 1]);
+            copyPosition(currentMesh, snakeMesh[index - 1]);
         }
     }
 }
 
 function goRight() {
     let currentMesh
-    for (let index = globalMesh.length - 1; index >= 0; index--) {
-        currentMesh = globalMesh[index]
+    for (let index = snakeMesh.length - 1; index >= 0; index--) {
+        currentMesh = snakeMesh[index]
         if (index == 0) {
-            currentMesh.position.x += UNIT;
+            currentMesh.position.x = to2Decimal(currentMesh.position.x + UNIT);
         } else {
-            copyPosition(currentMesh, globalMesh[index - 1]);
+            copyPosition(currentMesh, snakeMesh[index - 1]);
         }
     }
 }
 
 function goUp() {
-    for (let index = globalMesh.length - 1; index >= 0; index--) {
-        currentMesh = globalMesh[index]
+    for (let index = snakeMesh.length - 1; index >= 0; index--) {
+        currentMesh = snakeMesh[index]
         if (index == 0) {
-            currentMesh.position.z -= UNIT
+            currentMesh.position.z = to2Decimal(currentMesh.position.z - UNIT);
         } else {
-            copyPosition(currentMesh, globalMesh[index - 1]);
+            copyPosition(currentMesh, snakeMesh[index - 1]);
         }
     }
 }
 
 function goDown() {
-    for (let index = globalMesh.length - 1; index >= 0; index--) {
-        currentMesh = globalMesh[index]
+    for (let index = snakeMesh.length - 1; index >= 0; index--) {
+        currentMesh = snakeMesh[index]
         if (index == 0) {
-            currentMesh.position.z += UNIT
+            currentMesh.position.z = to2Decimal(currentMesh.position.z + UNIT);
         } else {
-            currentMesh.position.x = globalMesh[index - 1].position.x
-            currentMesh.position.y = globalMesh[index - 1].position.y
-            currentMesh.position.z = globalMesh[index - 1].position.z
+            copyPosition(currentMesh, snakeMesh[index - 1]);
         }
     }
+}
+
+function to2Decimal(value) {
+    return (Math.round(value * 10) / 10)
 }
 
 function copyPosition(currentMesh, nextMesh) {
@@ -230,19 +346,64 @@ function copyPosition(currentMesh, nextMesh) {
     currentMesh.position.z = nextMesh.position.z;
 }
 
-globalMesh = [];
-(function addingObjectOnScene() {
-    for (let index = 0; index < 4; index++) {
-        let mesh = new THREE.Mesh(geometry, materialGreen);
-        mesh.position.x = UNIT * SPACER * index
-        mesh.position.x = UNIT * index
-        mesh.position.z = 1
-        mesh.scale.x = 1 * SCALE;
-        mesh.scale.y = 1 * SCALE;
-        mesh.scale.z = 1 * SCALE;
-        mesh.name = "mesh" + index
-
-        arWorldRoot.add(mesh);
-        globalMesh.push(mesh)
+function createSnakeOnScene() {
+    for (let index = 0; index < SNAKE_INIT_SIZE; index++) {
+        createSnakePiece(index);
     }
-})()
+}
+createSnakeOnScene()
+
+function createSnakePiece(index) {
+    let mesh = new THREE.Mesh(geometry, materialGreen);
+    mesh.position.x = UNIT * index;
+    mesh.position.y = UNIT * 1;
+    mesh.position.z = UNIT * 1;
+    mesh.scale.x = 1 * SCALE;
+    mesh.scale.y = 1 * SCALE;
+    mesh.scale.z = 1 * SCALE;
+    mesh.name = "mesh" + index;
+    arWorldRoot.add(mesh);
+    snakeMesh.push(mesh);
+
+    currentSnakeSize++
+}
+
+function createExtraPiece() {
+    let mesh = new THREE.Mesh(geometry, materialGreen);
+    copyPosition(mesh, snakeMesh[currentSnakeSize - 1])
+    mesh.scale.x = 1 * SCALE;
+    mesh.scale.y = 1 * SCALE;
+    mesh.scale.z = 1 * SCALE;
+    mesh.name = "mesh" + currentSnakeSize;
+    arWorldRoot.add(mesh);
+    snakeMesh.push(mesh);
+
+    currentSnakeSize++
+}
+
+function resetSnake() {
+    currentWay = ''
+    currentSnakeSize = 0
+    score = 0
+    document.getElementById('score').innerHTML = `Score: ${score}`
+    snakeMesh = []
+
+    for (var i = arWorldRoot.children.length - 1; i >= 0; i--) {
+        arWorldRoot.remove(arWorldRoot.children[i]);
+    }
+
+    createSnakeOnScene()
+    createObstacleOnScene()
+}
+
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getRandomValueInsideRange() {
+    return getRandomInt(-RANGE_LIMIT, RANGE_LIMIT)
+}
