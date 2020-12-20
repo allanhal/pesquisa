@@ -1,5 +1,6 @@
 {
   "scripts": {
-    "start": "http-server -S -C cert.pem"
+    "start": "http-server -S -C cert.pem",
+    "deploy": "now --public && now alias https://arjs.allanhal.vercel.app arjs.now.sh"
   }
 }

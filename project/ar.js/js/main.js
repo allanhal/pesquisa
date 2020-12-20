@@ -45,15 +45,15 @@ scene.add(camera);
 
 var arToolkitSource = new THREEx.ArToolkitSource({
   // to read from the webcam
-  // sourceType: 'webcam',
+  sourceType: 'webcam',
 
   // to read from an image
   // sourceType: "image",
   // sourceUrl: "./images/kanji-fullpage.png",
 
   // to read from a video
-  sourceType: 'video',
-  sourceUrl: './headtracking.mp4',
+  // sourceType: 'video',
+  // sourceUrl: './headtracking.mp4',
 });
 
 arToolkitSource.init(function onReady() {
