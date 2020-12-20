@@ -3,44 +3,38 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 $(document).keydown(function (e) {
-  console.log("e.key", e.key);
-  // ArrowLeft
-  // ArrowRight
-  // ArrowUp
-  // ArrowDown
-
   switch (e.key) {
-    case "ArrowLeft": // left
-    case "a": // left
+    case 'ArrowLeft':
+    case 'a':
       setLeft();
       break;
-    case "ArrowUp": // up
-    case "w": // up
+    case 'ArrowUp':
+    case 'w':
       setUp();
       break;
-    case "ArrowRight": // right
-    case "d": // right
+    case 'ArrowRight':
+    case 'd':
       setRight();
       break;
-    case "ArrowDown": // down
-    case "s": // down
+    case 'ArrowDown':
+    case 's':
       setDown();
       break;
-    case "r": // reset
+    case 'r':
       resetSnake();
       break;
     default:
-      return; // exit this handler for other keys
+      return;
   }
-  e.preventDefault(); // prevent the default action (scroll / move caret)
+  e.preventDefault();
 });
 
 //////////////////////////////////////////////////////////////////////////////////
 //  Intersect Events
 //////////////////////////////////////////////////////////////////////////////////
 
-document.addEventListener("mousedown", onDocumentMouseDown, false);
-document.addEventListener("touchstart", onDocumentTouchStart, false);
+document.addEventListener('mousedown', onDocumentMouseDown, false);
+document.addEventListener('touchstart', onDocumentTouchStart, false);
 
 function onDocumentTouchStart(event) {
   event.clientX = event.touches[0].clientX;
@@ -49,35 +43,27 @@ function onDocumentTouchStart(event) {
 }
 
 function onDocumentMouseDown(event) {
-  var vector = new THREE.Vector3(
-    (event.clientX / window.innerWidth) * 2 - 1,
-    -(event.clientY / window.innerHeight) * 2 + 1,
-    0.5
-  );
+  var vector = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1, 0.5);
   vector.unproject(camera);
 
-  var ray = new THREE.Raycaster(
-    camera.position,
-    vector.sub(camera.position).normalize()
-  );
+  var ray = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
 
-  let toIntersect = scene.children.find((child) => child.name == "smoothedRoot")
-    .children;
+  let toIntersect = scene.children.find((child) => child.name == 'smoothedRoot').children;
 
   var intersects = ray.intersectObjects(toIntersect);
   var isIntersected = intersects && intersects.length > 0;
   if (isIntersected) {
     switch (intersects[0].object.name) {
-      case "meshUp":
+      case 'meshUp':
         setUp();
         break;
-      case "meshDown":
+      case 'meshDown':
         setDown();
         break;
-      case "meshRight":
+      case 'meshRight':
         setRight();
         break;
-      case "meshLeft":
+      case 'meshLeft':
         setLeft();
         break;
       default:
@@ -95,11 +81,8 @@ var touchstartY = 0;
 var touchendX = 0;
 var touchendY = 0;
 
-eventStart = "touchstart";
-eventEnd = "touchend";
-
-// eventStart = 'mousedown'
-// eventEnd = 'mouseup'
+eventStart = 'touchstart';
+eventEnd = 'touchend';
 
 document.body.addEventListener(
   eventStart,
@@ -122,16 +105,10 @@ document.body.addEventListener(
 
 function handleGesure() {
   let xDirection = touchendX < touchstartX;
-  let xDiff =
-    touchendX - touchstartX < 0
-      ? touchstartX - touchendX
-      : touchendX - touchstartX;
+  let xDiff = touchendX - touchstartX < 0 ? touchstartX - touchendX : touchendX - touchstartX;
 
   let yDirection = touchendY < touchstartY;
-  let yDiff =
-    touchendY - touchstartY < 0
-      ? touchstartY - touchendY
-      : touchendY - touchstartY;
+  let yDiff = touchendY - touchstartY < 0 ? touchstartY - touchendY : touchendY - touchstartY;
 
   if (xDiff == 0 && yDiff == 0 && enabledControls) {
     resetSnake();

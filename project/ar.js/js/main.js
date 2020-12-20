@@ -1,4 +1,4 @@
-THREEx.ArToolkitContext.baseURL = "../";
+THREEx.ArToolkitContext.baseURL = '../';
 
 var enableStats = false;
 
@@ -11,13 +11,13 @@ var renderer = new THREE.WebGLRenderer({
   // antialias	: true,
   alpha: true,
 });
-renderer.setClearColor(new THREE.Color("lightgrey"), 0);
+renderer.setClearColor(new THREE.Color('lightgrey'), 0);
 // renderer.setPixelRatio( 1/2 );
 
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.domElement.style.position = "absolute";
-renderer.domElement.style.top = "0px";
-renderer.domElement.style.left = "0px";
+renderer.domElement.style.position = 'absolute';
+renderer.domElement.style.top = '0px';
+renderer.domElement.style.left = '0px';
 document.body.appendChild(renderer.domElement);
 
 // array of functions for the rendering loop
@@ -31,12 +31,7 @@ var scene = new THREE.Scene();
 //////////////////////////////////////////////////////////////////////////////////
 
 // Create a camera
-var camera = new THREE.PerspectiveCamera(
-  140,
-  window.innerWidth / window.innerHeight,
-  1,
-  10000
-);
+var camera = new THREE.PerspectiveCamera(140, window.innerWidth / window.innerHeight, 1, 10000);
 scene.add(camera);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -45,15 +40,15 @@ scene.add(camera);
 
 var arToolkitSource = new THREEx.ArToolkitSource({
   // to read from the webcam
-  sourceType: 'webcam',
+  // sourceType: 'webcam',
 
   // to read from an image
   // sourceType: "image",
   // sourceUrl: "./images/kanji-fullpage.png",
 
   // to read from a video
-  // sourceType: 'video',
-  // sourceUrl: './headtracking.mp4',
+  sourceType: 'video',
+  sourceUrl: './headtracking.mp4',
 });
 
 arToolkitSource.init(function onReady() {
@@ -61,7 +56,7 @@ arToolkitSource.init(function onReady() {
 });
 
 // handle resize
-window.addEventListener("resize", function () {
+window.addEventListener('resize', function () {
   onResize();
 });
 
@@ -79,9 +74,8 @@ function onResize() {
 
 // create atToolkitContext
 var arToolkitContext = new THREEx.ArToolkitContext({
-  cameraParametersUrl:
-    "https://raw.githubusercontent.com/allanhal/pesquisa/master/assets/camera_para.dat",
-  detectionMode: "mono",
+  cameraParametersUrl: 'https://raw.githubusercontent.com/allanhal/pesquisa/master/assets/camera_para.dat',
+  detectionMode: 'mono',
   maxDetectionRate: 30,
   canvasWidth: 80 * 3,
   canvasHeight: 60 * 3,
@@ -104,21 +98,16 @@ onRenderFcts.push(function () {
 ////////////////////////////////////////////////////////////////////////////////
 
 var markerRoot = new THREE.Group();
-markerRoot.name = "markerRoot";
+markerRoot.name = 'markerRoot';
 scene.add(markerRoot);
-var artoolkitMarker = new THREEx.ArMarkerControls(
-  arToolkitContext,
-  markerRoot,
-  {
-    type: "pattern",
-    patternUrl:
-      "https://raw.githubusercontent.com/allanhal/pesquisa/master/assets/kanji.patt",
-  }
-);
+var artoolkitMarker = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
+  type: 'pattern',
+  patternUrl: 'https://raw.githubusercontent.com/allanhal/pesquisa/master/assets/kanji.patt',
+});
 
 // build a smoothedControls
 var smoothedRoot = new THREE.Group();
-smoothedRoot.name = "smoothedRoot";
+smoothedRoot.name = 'smoothedRoot';
 scene.add(smoothedRoot);
 var smoothedControls = new THREEx.ArSmoothedControls(smoothedRoot, {
   lerpPosition: 0.4,

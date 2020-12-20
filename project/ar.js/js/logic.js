@@ -1,4 +1,4 @@
-const UNIT = 0.3;
+const UNIT = 0.1;
 const SPACER = 2;
 const SCALE = 0.9;
 const SNAKE_INIT_SIZE = 6;
@@ -56,71 +56,51 @@ var materialRgb = new THREE.MeshNormalMaterial({
 });
 
 function createControls() {
-  let materialArray = [
-    materialBlue,
-    materialBlue,
-    materialBlue,
-    materialBlue,
-    materialBlue,
-    materialBlue,
-  ];
+  let materialArray = [materialBlue, materialBlue, materialBlue, materialBlue, materialBlue, materialBlue];
 
   let materialArrayUp = [].concat(materialArray);
 
   meshUp = new THREE.Mesh(geometry, materialArrayUp);
   meshUp.position.x = -5 * UNIT;
-  meshUp.position.y = UNIT * 1;
+  meshUp.position.y = 1 * UNIT;
   meshUp.position.z = -2 * UNIT;
-  meshUp.name = "meshUp";
+  meshUp.name = 'meshUp';
   meshUp.scale.x = 3 * SCALE;
   meshUp.scale.y = 3 * SCALE;
   meshUp.scale.z = 3 * SCALE;
 
   var materialArrayDown = [].concat(materialArray);
-  // materialArrayDown[2] = new THREE.MeshBasicMaterial({
-  //     map: loader.load("images/yposDown.png")
-  // })
-
-  // var meshDown = new THREE.Mesh(geometry, materialYellow);
   meshDown = new THREE.Mesh(geometry, materialArrayDown);
   meshDown.position.x = -5 * UNIT;
-  meshDown.position.y = UNIT * 1;
+  meshDown.position.y = 1 * UNIT;
   meshDown.position.z = 2 * UNIT;
-  meshDown.name = "meshDown";
+  meshDown.name = 'meshDown';
   meshDown.scale.x = 3 * SCALE;
   meshDown.scale.y = 3 * SCALE;
   meshDown.scale.z = 3 * SCALE;
 
   var materialArrayRight = [].concat(materialArray);
-  // materialArrayRight[2] = new THREE.MeshBasicMaterial({
-  //     map: loader.load("images/yposRight.png")
-  // })
-
-  // var meshRight = new THREE.Mesh(geometry, materialGreen);
   meshRight = new THREE.Mesh(geometry, materialArrayRight);
   meshRight.position.x = 8 * UNIT;
-  meshRight.position.y = UNIT * 1;
+  meshRight.position.y = 1 * UNIT;
   meshRight.position.z = 0 * UNIT;
-  meshRight.name = "meshRight";
+  meshRight.name = 'meshRight';
   meshRight.scale.x = 3 * SCALE;
   meshRight.scale.y = 3 * SCALE;
   meshRight.scale.z = 3 * SCALE;
 
   var materialArrayLeft = [].concat(materialArray);
-  // materialArrayLeft[2] = new THREE.MeshBasicMaterial({
-  //     map: loader.load("images/yposLeft.png")
-  // })
   meshLeft = new THREE.Mesh(geometry, materialArrayLeft);
   meshLeft.position.x = 4 * UNIT;
-  meshLeft.position.y = UNIT * 1;
+  meshLeft.position.y = 1 * UNIT;
   meshLeft.position.z = 0 * UNIT;
-  meshLeft.name = "meshLeft";
+  meshLeft.name = 'meshLeft';
   meshLeft.scale.x = 3 * SCALE;
   meshLeft.scale.y = 3 * SCALE;
   meshLeft.scale.z = 3 * SCALE;
 
   let queryParams = new URLSearchParams(window.location.search);
-  if (queryParams.has("controls")) {
+  if (queryParams.has('controls')) {
     toggleControls();
   }
 }
@@ -151,14 +131,13 @@ function createObstacleOnScene() {
   meshObstacle.scale.x = 1 * SCALE;
   meshObstacle.scale.y = 1 * SCALE;
   meshObstacle.scale.z = 1 * SCALE;
-  meshObstacle.name = "meshObstacle";
+  meshObstacle.name = 'meshObstacle';
 
   arWorldRoot.add(meshObstacle);
 }
 createObstacleOnScene();
 
-// main loop
-onRenderFcts.push(function () {
+function mainLoop() {
   keepObstacleRotation();
 
   let now = new Date().getTime();
@@ -166,28 +145,30 @@ onRenderFcts.push(function () {
     lastTime = now;
 
     setDirectionOfSnake();
-    verifyObstacleColision();
+    verifyHeadObstacleColision();
+    verifyHeadSnakeColision();
   }
-});
+}
+onRenderFcts.push(mainLoop);
 
 function keepObstacleRotation() {
-  meshObstacle.rotation.x += 0.1;
-  meshObstacle.rotation.y += 0.001;
+  meshObstacle.rotation.x += 0.01;
+  meshObstacle.rotation.y += 0.0001;
 }
 
 function setDirectionOfSnake() {
   if (currentWay) {
     switch (currentWay) {
-      case "r":
+      case 'r':
         goRight();
         break;
-      case "l":
+      case 'l':
         goLeft();
         break;
-      case "u":
+      case 'u':
         goUp();
         break;
-      case "d":
+      case 'd':
         goDown();
         break;
       default:
@@ -196,7 +177,7 @@ function setDirectionOfSnake() {
   }
 }
 
-function verifyObstacleColision() {
+function verifyHeadObstacleColision() {
   let snakeHead = snakeMesh[0];
   let snakeX = to2Decimal(snakeHead.position.x);
   let snakeZ = to2Decimal(snakeHead.position.z);
@@ -207,32 +188,23 @@ function verifyObstacleColision() {
   let sameX = snakeX == obstacleX;
   let sameZ = snakeZ == obstacleZ;
 
-  // console.log('snakeX', snakeX)
-  // console.log('snakeZ', snakeZ)
-
-  // console.log('obstacleX', obstacleX)
-  // console.log('obstacleZ', obstacleZ)
-
-  // console.log('sameX', sameX)
-  // console.log('sameZ', sameZ)
-
   let consolable = `
     <br>
-    snakeX ${snakeX} 
+    snakeX ${snakeX}
     <br>
-    snakeZ ${snakeZ} 
+    snakeZ ${snakeZ}
     <br>
-    obstacleX ${obstacleX} 
+    obstacleX ${obstacleX}
     <br>
-    obstacleZ ${obstacleZ} 
+    obstacleZ ${obstacleZ}
     <br>
-    sameX ${sameX} 
+    sameX ${sameX}
     <br>
-    sameZ ${sameZ} 
+    sameZ ${sameZ}
     <br>
     `;
 
-  // document.getElementById('console').innerHTML = consolable
+  // document.getElementById('console').innerHTML = consolable;
 
   let isSnakeHeadeCollidedObstacle = sameX && sameZ;
   if (isSnakeHeadeCollidedObstacle) {
@@ -242,24 +214,57 @@ function verifyObstacleColision() {
     meshObstacle.position.z = newObstacleZ;
 
     createExtraPiece();
-    document.getElementById("score").innerHTML = `Score: ${++score}`;
+    document.getElementById('score').innerHTML = `Score: ${++score}`;
+  }
+}
+
+function verifyHeadSnakeColision() {
+  let snakeHead = snakeMesh[0];
+  let snakeHeadX = to2Decimal(snakeHead.position.x);
+  let snakeHeadZ = to2Decimal(snakeHead.position.z);
+
+  let isSnakeHeadeCollidedSnake = false;
+
+  snakeMesh.forEach((snakePiece, index) => {
+    if (index != 0) {
+      let x = to2Decimal(snakePiece.position.x);
+      let z = to2Decimal(snakePiece.position.z);
+
+      let sameX = snakeHeadX == x;
+      let sameZ = snakeHeadZ == z;
+
+      isSnakeHeadeCollidedSnake = isSnakeHeadeCollidedSnake || (sameX && sameZ);
+    }
+  });
+
+  if (isSnakeHeadeCollidedSnake) {
+    snakeMesh.forEach((snakePiece) => {
+      snakePiece.material = materialPurple;
+    });
+    resetSnake();
+    Swal.fire({
+      title: 'You lost!',
+      icon: 'error',
+      timer: 3000,
+      showConfirmButton: false,
+    });
   }
 }
 
 function setLeft() {
-  if (currentWay != "r") currentWay = "l";
+  if (currentWay != 'r') currentWay = 'l';
 }
 
 function setRight() {
-  if (currentWay != "l") currentWay = "r";
+  if (currentWay != 'l') currentWay = 'r';
 }
 
 function setUp() {
-  if (currentWay != "d") currentWay = "u";
+  if (currentWay != 'd') currentWay = 'u';
 }
 
 function setDown() {
-  if (currentWay != "u") currentWay = "d";
+  if (currentWay != 'u') currentWay = 'd';
 }
 
 function goLeft() {
@@ -326,14 +331,14 @@ function createSnakeOnScene() {
 createSnakeOnScene();
 
 function createSnakePiece(index) {
-  let mesh = new THREE.Mesh(geometry, materialGreen);
+  let mesh = new THREE.Mesh(geometry, index === 0 ? materialBlue : materialGreen);
   mesh.position.x = UNIT * index;
   mesh.position.y = UNIT * 1;
   mesh.position.z = UNIT * 1;
   mesh.scale.x = 1 * SCALE;
   mesh.scale.y = 1 * SCALE;
   mesh.scale.z = 1 * SCALE;
-  mesh.name = "mesh" + index;
+  mesh.name = 'mesh' + index;
   arWorldRoot.add(mesh);
   snakeMesh.push(mesh);
 
@@ -346,7 +351,7 @@ function createExtraPiece() {
   mesh.scale.x = 1 * SCALE;
   mesh.scale.y = 1 * SCALE;
   mesh.scale.z = 1 * SCALE;
-  mesh.name = "mesh" + currentSnakeSize;
+  mesh.name = 'mesh' + currentSnakeSize;
   arWorldRoot.add(mesh);
   snakeMesh.push(mesh);
 
@@ -354,10 +359,10 @@ function createExtraPiece() {
 }
 
 function resetSnake() {
-  currentWay = "";
+  currentWay = '';
   currentSnakeSize = 0;
   score = 0;
-  document.getElementById("score").innerHTML = `Score: ${score}`;
+  document.getElementById('score').innerHTML = `Score: ${score}`;
   snakeMesh = [];
 
   for (var i = arWorldRoot.children.length - 1; i >= 0; i--) {
