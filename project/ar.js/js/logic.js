@@ -3,12 +3,14 @@ const SPACER = 2;
 const SCALE = 0.9;
 const SNAKE_INIT_SIZE = 6;
 const RANGE_LIMIT = 2;
+const WALL_LIMIT = 10;
 
 var currentWay = undefined;
 var currentSnakeSize = 0;
 var lastTime = 0;
 var delay = 300;
 var snakeMesh = [];
+var wallMesh = [];
 var meshObstacle;
 
 var enabledControls = true;
@@ -121,6 +123,31 @@ function toggleControls() {
     arWorldRoot.remove(meshLeft);
     enabledControls = !enabledControls;
   }
+}
+
+function createWallsOnScene() {
+  for (let x = 0; x < WALL_LIMIT * 2; x++) {
+    createWallElements(x, -WALL_LIMIT, 'wallElementTop', materialBlue);
+    createWallElements(x, WALL_LIMIT, 'wallElementBottom', materialYellow);
+    createWallElements(0, x - WALL_LIMIT, 'wallElementLeft', materialPurple);
+    createWallElements(WALL_LIMIT * 2, x - WALL_LIMIT, 'wallElementRight', materialYellow);
+  }
+}
+createWallsOnScene();
+
+function createWallElements(x, z, name, material) {
+  var wallElement = new THREE.Mesh(geometry, material);
+  wallElement.position.x = UNIT * x;
+  wallElement.position.y = UNIT * 1;
+  wallElement.position.z = UNIT * z;
+  wallElement.scale.x = SCALE;
+  wallElement.scale.y = SCALE;
+  wallElement.scale.z = 1 * SCALE;
+  wallElement.name = name + x;
+
+  wallMesh.push(wallElement);
+
+  arWorldRoot.add(wallElement);
 }
 
 function createObstacleOnScene() {
@@ -370,6 +397,7 @@ function resetSnake() {
   }
 
   createSnakeOnScene();
+  createWallsOnScene();
   createObstacleOnScene();
 }
 
