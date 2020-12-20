@@ -1,24 +1,36 @@
 html,
 body {
-    position: fixed;
-    overflow: hidden;
-    margin: 0px;
-    padding: 0px;
+  position: fixed;
+  overflow: hidden;
+  margin: 0px;
+  padding: 0px;
 }
 
 .complete-div {
-    width: 100vw;
-    height: 100vh;
-    overflow-y: scroll;
-    -webkit-overflow-scrolling: touch;
+  width: 100vw;
+  height: 100vh;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
 }
 
 .header-div {
-    font-family: 'Helvetica', 'Arial', sans-serif;
-    font-size: 9pt;
-    padding: 5px;
-    margin: 5px;
-    text-align: center;
-    background-color: rgb(52, 138, 213);
-    color: white;
+  font-family: "Helvetica", "Arial", sans-serif;
+  font-size: 20pt;
+  padding: 0.2rem;
+  margin: 0.5rem;
+  text-align: center;
+  background-color: rgb(52, 138, 213, 0.75);
+  color: white;
+}
+
+.controls-div {
+  font-family: "Helvetica", "Arial", sans-serif;
+  font-size: 15pt;
+  text-align: left;
+  position: absolute;
+  bottom: 0;
+  padding: 1rem;
+  margin: 1rem;
+  background-color: rgb(255, 255, 0, 0.5);
+  color: black;
 }
